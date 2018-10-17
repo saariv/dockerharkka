@@ -1,0 +1,127 @@
+<!---Vilma Saari, 0454426, harkat 3 ja 4 (www-sovellukset)-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>To Do List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel ="stylesheet" type= "text/css" href="style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script> //vilma saari, 0454426, harkat 3 ja 4 (www-sovellukset)
+
+  'use strict';
+  document.addEventListener( "DOMContentLoaded", function(){
+
+  var app =new Vue ({
+      el: '#app',
+      name: 'vue-instace',
+
+      data () {
+        return {
+          itemName: '',
+          tasks: [
+            'do laundry',
+            'call mom',
+            'buy gift to Ida',
+            'cook',
+          ],
+        };
+      },
+
+      mounted() {
+
+        if(localStorage.getItem('tasks')) {
+          try {
+            this.tasks = JSON.parse(localStorage.getItem('tasks'));
+          } catch(e) {
+            localStorage.removeItem('tasks');
+          }
+        }
+      },
+
+      methods: {
+        addItem () {
+          if (!this.itemName) return;
+          this.tasks.push(this.itemName);
+          this.itemName ='';
+          this.savetasks();
+        },
+
+        removeItem(index) {
+          this.tasks.splice(index,1);
+          this.savetasks();
+        },
+  //tallennetaan taskit välimuistiin
+        savetasks(){
+          let parsed = JSON.stringify(this.tasks);
+          localStorage.setItem('tasks', parsed);
+        },
+
+        checkForm: function (e) {
+
+          this.errors = [];
+          if (!this.itemName) {
+            this.errors.push("Task required.");
+           } else if (!this.validName(this.itemName)) {
+           this.errors.push('Valid task required.');
+         }
+         if(!this.errors.length) return true;
+              e.preventDefault();
+
+       },
+
+       validName: function (itemName) {
+         var re = /[a-zA-Z0-9,.]/;
+          return re.test(itemName);
+     }
+        },
+      },
+    )})
+</script>
+<meta charset='utf-8'>
+</meta>
+</head>
+<body>
+
+<div id="app" class="container" >
+  <div class="row">
+  <h1 class="teal lighten-1 white-text center-align" ><i class="material-icons">chevron_left</i>To Do List<i class="material-icons">chevron_right</i></h1>
+</div>
+<main><!--tekstin syöttö ja nappi-->
+  <div  class="form__item row">
+    <div class="col s11"><span><input type="text" v-model="itemName" class="form__field" placeholder="Add task" class="flow-text" v-on:keyup.13="addItem" /></span></div>
+    <div class="col s1"><span><a class="btn-floating pulse teal lighten" v-on:click="addItem"><i class="material-icons">add</i></a></span></div>
+ 
+  </div>
+  <!--taskien luettelo, Materializen collection-->
+<div class= "row">
+  <ul class="collection" v-if="tasks.length">
+    <li class="collection__item"
+        v-for="(task, index) in tasks"
+        class="flow-text">
+      <h4 class="flow-text">{{ task }} </h4>
+
+      <label>
+        <a class="waves-effect waves-teal btn-flat teal-text" v-on:click="removeItem(index)" >Done!</a>
+      </label>
+      </li>
+    </div>
+  </ul>
+  <!--jos ei ole taskeja-->
+    <div v-if="!tasks.length"><h4 class="flow-text">Add something to do! </h4></div>
+
+</div>
+</main>
+<footer class="page-footer teal lighten-1 " style="position:fixed;bottom:0;width:100%">
+          <div class="footer-copyright">
+            <div class="container">
+            <p class="grey-text text-lighten-4 left"><i class="material-icons">bubble_chart</i>  © 2018 Vilma Saari</p>
+            <p class="grey-text text-lighten-4 right" >WWW-sovellukset</p>
+            </div>
+          </div>
+        </footer>
+
+</body>
+</html>
